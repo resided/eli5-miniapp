@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MiniappSDK } from "@farcaster/miniapp-sdk";
+import sdk from "@farcaster/miniapp-sdk";
 import { fetchCastByUrl, generateELI5Explanation } from "@/features/app/actions";
 import { Cast, AppState } from "@/features/app/types";
 import { SUPPORTED_LANGUAGES, type LanguageCode } from "@/features/app/constants";
 
 export default function Home() {
-  const [sdk] = useState(() => new MiniappSDK());
   const [appState, setAppState] = useState<AppState>("loading");
   const [cast, setCast] = useState<Cast | null>(null);
   const [explanation, setExplanation] = useState<string>("");
@@ -19,16 +18,25 @@ export default function Home() {
   useEffect(() => {
     const initializeSDK = async () => {
       try {
-        await sdk.init();
+        // Check if we're in a miniapp environment
+        const isInMiniApp = await sdk.isInMiniApp();
         
-        // Check if opened from cast share
-        // Context might be a property or a method
-        const context = (sdk as any).context || await (sdk as any).context?.();
-        if (context?.cast?.hash) {
-          // If opened from cast share, fetch the cast
-          const castUrl = `https://warpcast.com/${context.cast.author.username}/${context.cast.hash}`;
-          await handleFetchCast(castUrl);
+        if (isInMiniApp) {
+          // Call ready to initialize the SDK
+          await sdk.actions.ready();
+          
+          // Get context - it's a Promise
+          const context = await sdk.context;
+          
+          if (context?.cast?.hash) {
+            // If opened from cast share, fetch the cast
+            const castUrl = `https://warpcast.com/${context.cast.author.username}/${context.cast.hash}`;
+            await handleFetchCast(castUrl);
+          } else {
+            setAppState("no-cast");
+          }
         } else {
+          // Not in miniapp, allow manual URL entry
           setAppState("no-cast");
         }
       } catch (err) {
