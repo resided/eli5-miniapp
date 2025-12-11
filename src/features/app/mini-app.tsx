@@ -42,15 +42,35 @@ export function MiniApp() {
     if (contextLoading) return;
 
     if (isFromShareTab && sharedCast) {
-      // Cast came from share tab - start explaining immediately
-      setCast(sharedCast);
-      setState("explaining");
-      generateExplanation(sharedCast.text, language, sharedCast.images);
+      // Cast came from share tab
+      // If no images were extracted from SDK, try fetching via Neynar API to get images
+      if (!sharedCast.images || sharedCast.images.length === 0) {
+        // Try to fetch the full cast data including images
+        const castUrl = `https://warpcast.com/${sharedCast.author.username || sharedCast.author.fid}/${sharedCast.hash}`;
+        fetchCastByUrl(castUrl)
+          .then((fullCast) => {
+            setCast(fullCast);
+            setState("explaining");
+            generateExplanation(fullCast.text, language, fullCast.images);
+          })
+          .catch((err) => {
+            // If fetch fails, use what we have from SDK
+            console.error("Failed to fetch full cast:", err);
+            setCast(sharedCast);
+            setState("explaining");
+            generateExplanation(sharedCast.text, language, sharedCast.images);
+          });
+      } else {
+        // Images found in SDK context, use them directly
+        setCast(sharedCast);
+        setState("explaining");
+        generateExplanation(sharedCast.text, language, sharedCast.images);
+      }
     } else {
       // No shared cast - show URL input screen
       setState("no-cast");
     }
-  }, [contextLoading, isFromShareTab, sharedCast]);
+  }, [contextLoading, isFromShareTab, sharedCast, language]);
 
   // Generate AI explanation for a cast (with optional images)
   async function generateExplanation(castText: string, lang: LanguageCode, images?: string[]) {
