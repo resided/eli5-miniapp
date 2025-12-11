@@ -48,7 +48,7 @@ export function useCastContext(): CastContextResult {
                   url.includes(".gif") || 
                   url.includes(".webp");
                 
-                // Check for common image hosting patterns
+                // Check for common image hosting patterns and CDNs
                 const isImageHost = url.includes("imgur.com") ||
                   url.includes("i.imgur.com") ||
                   url.includes("cdn.discordapp.com") ||
@@ -56,12 +56,14 @@ export function useCastContext(): CastContextResult {
                   url.includes("giphy.com") ||
                   url.includes("media.giphy.com") ||
                   url.includes("warpcast.com/~/image") ||
-                  url.includes("imagedelivery.net") ||
+                  url.includes("wrpcd.net") || // Warpcast CDN
+                  url.includes("imagedelivery.net") || // Cloudflare Images
+                  url.includes("cdn-cgi/imagedelivery") || // Cloudflare Images pattern
                   url.includes("cloudinary.com");
                 
-                // If it's a valid URL and looks like an image, include it
-                // Be permissive - in cast shares, embeds are usually images
-                if (hasImageExtension || isImageHost || url.startsWith("http")) {
+                // In cast shares, embeds are almost always images
+                // Accept any HTTP/HTTPS URL from embeds as a potential image
+                if (hasImageExtension || isImageHost || (url.startsWith("http://") || url.startsWith("https://"))) {
                   images.push(embed.trim());
                 }
               }
