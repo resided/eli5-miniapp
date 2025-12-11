@@ -39,35 +39,42 @@ export function MiniApp() {
 
   // Handle cast context detection
   useEffect(() => {
-    if (contextLoading) return;
+    if (contextLoading) {
+      console.log("Context still loading...");
+      return;
+    }
+
+    console.log("Context loaded - isFromShareTab:", isFromShareTab, "sharedCast:", sharedCast);
 
     if (isFromShareTab && sharedCast) {
+      console.log("Processing shared cast:", sharedCast);
       // Cast came from share tab
       // If no images were extracted from SDK, try fetching via Neynar API to get images
       if (!sharedCast.images || sharedCast.images.length === 0) {
         // Try to fetch the full cast data including images
         const castUrl = `https://warpcast.com/${sharedCast.author.username || sharedCast.author.fid}/${sharedCast.hash}`;
+        console.log("Fetching full cast from URL:", castUrl);
         fetchCastByUrl(castUrl)
           .then((fullCast) => {
+            console.log("Fetched full cast:", fullCast);
             setCast(fullCast);
-            setState("explaining");
             generateExplanation(fullCast.text, language, fullCast.images);
           })
           .catch((err) => {
             // If fetch fails, use what we have from SDK
             console.error("Failed to fetch full cast:", err);
             setCast(sharedCast);
-            setState("explaining");
             generateExplanation(sharedCast.text, language, sharedCast.images);
           });
       } else {
         // Images found in SDK context, use them directly
+        console.log("Using cast from SDK context with images");
         setCast(sharedCast);
-        setState("explaining");
         generateExplanation(sharedCast.text, language, sharedCast.images);
       }
     } else {
       // No shared cast - show URL input screen
+      console.log("No shared cast detected, showing URL input screen");
       setState("no-cast");
     }
   }, [contextLoading, isFromShareTab, sharedCast, language]);
@@ -76,13 +83,20 @@ export function MiniApp() {
   async function generateExplanation(castText: string, lang: LanguageCode, images?: string[]) {
     try {
       setError(null);
+      setState("explaining");
       const result = await generateELI5Explanation(castText, lang, images);
       setExplanation(result);
       setState("result");
     } catch (err) {
       console.error("Failed to generate explanation:", err);
-      setError(err instanceof Error ? err.message : "Failed to generate explanation");
-      setState("no-cast");
+      const errorMessage = err instanceof Error ? err.message : "Failed to generate explanation";
+      setError(errorMessage);
+      // Keep the cast visible so user can see what went wrong
+      if (cast) {
+        setState("no-cast");
+      } else {
+        setState("no-cast");
+      }
     }
   }
 

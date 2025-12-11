@@ -27,6 +27,11 @@ export function useCastContext(): CastContextResult {
     async function checkCastContext() {
       try {
         const context = await sdk.context;
+        
+        // Debug logging
+        console.log("Full SDK context:", JSON.stringify(context, null, 2));
+        console.log("Context location:", context?.location);
+        console.log("Location type:", context?.location?.type);
 
         if (context?.location?.type === "cast_share") {
           // App was opened from share tab with a cast
