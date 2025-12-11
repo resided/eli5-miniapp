@@ -1,21 +1,35 @@
 {
-  "accountAssociation": {
-    "header": "YOUR_HEADER_HERE",
-    "payload": "YOUR_PAYLOAD_HERE", 
-    "signature": "YOUR_SIGNATURE_HERE"
-  },
   "frame": {
-    "version": "1",
     "name": "ELI5",
-    "iconUrl": "https://YOUR_DOMAIN/app-logo.png",
-    "homeUrl": "https://YOUR_DOMAIN",
-    "splashImageUrl": "https://YOUR_DOMAIN/app-splash.png",
+    "version": "1",
+    "iconUrl": "https://eli5-miniapp.vercel.app/logo.png",
+    "homeUrl": "https://eli5-miniapp.vercel.app",
+    "imageUrl": "https://eli5-miniapp.vercel.app/logo.png",
+    "splashImageUrl": "https://eli5-miniapp.vercel.app/logo.png",
     "splashBackgroundColor": "#ffffff",
+    "webhookUrl": "https://eli5-miniapp.vercel.app/api/webhook",
+    "subtitle": "Simplify complex casts",
+    "description": "Instantly simplify complex casts into plain, easy-to-understand explanations. Open from the share menu or paste a cast URL.",
+    "screenshotUrls": [
+      "https://eli5-miniapp.vercel.app/logo.png"
+    ],
+    "primaryCategory": "social",
+    "tags": [
+      "social",
+      "ai"
+    ],
+    "heroImageUrl": "https://eli5-miniapp.vercel.app/logo.png",
+    "ogDescription": " Explain any Farcaster cast in simple terms",
+    "ogImageUrl": "https://eli5-miniapp.vercel.app/logo.png",
     "triggers": [
       {
         "type": "cast_share"
       }
     ]
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjM0MjQzMywidHlwZSI6ImF1dGgiLCJrZXkiOiIweDlGYUEzZWMxNjZDMjlCOTU0MjZENWJiQjc5RDNCNDVBZDUxQ0QxYzIifQ",
+    "payload": "eyJkb21haW4iOiJlbGk1LW1pbmlhcHAudmVyY2VsLmFwcCJ9",
+    "signature": "7ZVVXstNkc7sQneh2H1C5eYKr2+MMrz6BVOM1CQIG7AV1Itg/aPZYzjRHLLAFFq+PHuIA4SQoym4rEyxWWXGxxs="
   }
 }
-
