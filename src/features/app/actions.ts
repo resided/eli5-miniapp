@@ -8,7 +8,7 @@ const openai = new OpenAI({
 });
 
 /**
- * Generate an ELI5 explanation for a cast
+ * Generate an ELI5 (Explain Like I'm 5) explanation for a cast
  * Supports both text and images using GPT-4o vision
  */
 export async function generateELI5Explanation(
@@ -28,13 +28,16 @@ export async function generateELI5Explanation(
   const hasImages = images && images.length > 0;
   const hasText = castText && castText.trim().length > 0;
 
+  // If no content at all
   if (!hasImages && !hasText) {
-    return "It looks like there isn't any text to explain! If you share a post with words or ideas, I can help make it simple and fun to understand.";
+    return "It looks like there isn't any text to explain! If you share a post with words or ideas, I can help make it simple and fun to understand. Just let me know!";
   }
 
   try {
+    // Build the content array for the user message
     const userContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [];
 
+    // Add text instruction
     if (hasText && hasImages) {
       userContent.push({
         type: "text",
@@ -52,6 +55,7 @@ export async function generateELI5Explanation(
       });
     }
 
+    // Add images
     if (hasImages) {
       for (const imageUrl of images) {
         userContent.push({
@@ -62,7 +66,7 @@ export async function generateELI5Explanation(
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o", // Use gpt-4o for vision support
       messages: [
         {
           role: "system",
@@ -121,8 +125,10 @@ export async function fetchCastByUrl(warpcastUrl: string): Promise<{
   }
 
   try {
+    // Normalize the URL
     let normalizedUrl = warpcastUrl.trim();
 
+    // Validate it's a Farcaster cast URL (warpcast.com or farcaster.xyz)
     const isWarpcast = normalizedUrl.includes("warpcast.com");
     const isFarcasterXyz = normalizedUrl.includes("farcaster.xyz");
 
@@ -130,10 +136,12 @@ export async function fetchCastByUrl(warpcastUrl: string): Promise<{
       throw new Error("Please enter a valid Warpcast or Farcaster URL");
     }
 
+    // Convert farcaster.xyz URLs to warpcast.com format for the API
     if (isFarcasterXyz) {
       normalizedUrl = normalizedUrl.replace("farcaster.xyz", "warpcast.com");
     }
 
+    // Use Neynar API to fetch the cast by URL
     const response = await fetch(
       `https://api.neynar.com/v2/farcaster/cast?type=url&identifier=${encodeURIComponent(normalizedUrl)}`,
       {
@@ -157,15 +165,18 @@ export async function fetchCastByUrl(warpcastUrl: string): Promise<{
       throw new Error("Cast not found");
     }
 
+    // Extract image URLs from embeds
     const images: string[] = [];
     if (cast.embeds && Array.isArray(cast.embeds)) {
       for (const embed of cast.embeds) {
+        // Check for direct image URLs
         if (embed.url && typeof embed.url === "string") {
           const url = embed.url.toLowerCase();
           if (url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".webp")) {
             images.push(embed.url);
           }
         }
+        // Check for metadata with image
         if (embed.metadata?.image?.url) {
           images.push(embed.metadata.image.url);
         }

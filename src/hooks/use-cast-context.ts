@@ -10,6 +10,12 @@ interface CastContextResult {
   isFromShareTab: boolean;
 }
 
+/**
+ * Hook to detect and extract cast context from Farcaster SDK
+ *
+ * When the app is opened from the share tab, the SDK context
+ * will have location.type === 'cast_share' with the cast data.
+ */
 export function useCastContext(): CastContextResult {
   const [result, setResult] = useState<CastContextResult>({
     cast: null,
@@ -20,17 +26,13 @@ export function useCastContext(): CastContextResult {
   useEffect(() => {
     async function checkCastContext() {
       try {
-        const isInMiniApp = await sdk.isInMiniApp();
-        
-        if (isInMiniApp) {
-          await sdk.actions.ready();
-        }
-        
         const context = await sdk.context;
 
         if (context?.location?.type === "cast_share") {
+          // App was opened from share tab with a cast
           const miniAppCast = context.location.cast;
 
+          // Transform MiniAppCast to our Cast type
           const cast: Cast = {
             hash: miniAppCast.hash,
             text: miniAppCast.text,
@@ -40,7 +42,6 @@ export function useCastContext(): CastContextResult {
               displayName: miniAppCast.author.displayName || miniAppCast.author.username || "Unknown",
               pfpUrl: miniAppCast.author.pfpUrl || `https://api.dicebear.com/9.x/lorelei/svg?seed=${miniAppCast.author.fid}`,
             },
-            images: miniAppCast.embeds?.filter((url): url is string => typeof url === "string"),
           };
 
           setResult({
@@ -49,6 +50,7 @@ export function useCastContext(): CastContextResult {
             isFromShareTab: true,
           });
         } else {
+          // App was opened from launcher or other location
           setResult({
             cast: null,
             isLoading: false,
@@ -70,4 +72,3 @@ export function useCastContext(): CastContextResult {
 
   return result;
 }
-

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import type { AppState, Cast } from "@/features/app/types";
 import { useCastContext } from "@/hooks/use-cast-context";
 import { generateELI5Explanation, fetchCastByUrl } from "@/features/app/actions";
-import { type LanguageCode } from "@/features/app/constants";
+import { SUPPORTED_LANGUAGES, type LanguageCode } from "@/features/app/constants";
 import { LoadingScreen } from "@/features/app/components/loading-screen";
 import { PasteUrlScreen } from "@/features/app/components/paste-url-screen";
 import { ExplainingScreen } from "@/features/app/components/explaining-screen";
@@ -18,21 +18,25 @@ export function MiniApp() {
   const [error, setError] = useState<string | null>(null);
   const [language, setLanguage] = useState<LanguageCode>("en");
 
+  // Get cast context from Farcaster SDK (share tab)
   const { cast: sharedCast, isLoading: contextLoading, isFromShareTab } = useCastContext();
 
+  // Handle cast context detection
   useEffect(() => {
     if (contextLoading) return;
 
     if (isFromShareTab && sharedCast) {
+      // Cast came from share tab - start explaining immediately
       setCast(sharedCast);
       setState("explaining");
       generateExplanation(sharedCast.text, language, sharedCast.images);
     } else {
+      // No shared cast - show URL input screen
       setState("no-cast");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextLoading, isFromShareTab, sharedCast]);
 
+  // Generate AI explanation for a cast (with optional images)
   async function generateExplanation(castText: string, lang: LanguageCode, images?: string[]) {
     try {
       setError(null);
@@ -46,6 +50,7 @@ export function MiniApp() {
     }
   }
 
+  // Handle paste URL submission
   async function handlePasteSubmit() {
     if (!castUrl.trim()) return;
 
@@ -53,10 +58,12 @@ export function MiniApp() {
       setError(null);
       setState("loading");
 
+      // Fetch the cast from the URL (includes images)
       const fetchedCast = await fetchCastByUrl(castUrl);
       setCast(fetchedCast);
       setState("explaining");
 
+      // Generate explanation with images
       await generateExplanation(fetchedCast.text, language, fetchedCast.images);
     } catch (err) {
       console.error("Failed to fetch cast:", err);
@@ -65,6 +72,7 @@ export function MiniApp() {
     }
   }
 
+  // Handle re-explain in a different language
   async function handleLanguageChange(newLang: LanguageCode) {
     if (!cast) return;
     setLanguage(newLang);
@@ -72,6 +80,7 @@ export function MiniApp() {
     await generateExplanation(cast.text, newLang, cast.images);
   }
 
+  // Handle reset to try another cast
   function handleReset() {
     setState("no-cast");
     setCast(null);
@@ -80,6 +89,7 @@ export function MiniApp() {
     setError(null);
   }
 
+  // Render appropriate screen based on state
   if (state === "loading") {
     return <LoadingScreen />;
   }
@@ -113,6 +123,6 @@ export function MiniApp() {
     );
   }
 
+  // Fallback
   return <LoadingScreen />;
 }
-
