@@ -4,6 +4,7 @@
     "version": "1",
     "iconUrl": "https://eli5-miniapp.vercel.app/logo.png",
     "homeUrl": "https://eli5-miniapp.vercel.app",
+    "castShareUrl": "https://eli5-miniapp.vercel.app",
     "imageUrl": "https://eli5-miniapp.vercel.app/logo.png",
     "splashImageUrl": "https://eli5-miniapp.vercel.app/logo.png",
     "splashBackgroundColor": "#ffffff",
