@@ -213,10 +213,16 @@ export async function fetchCastByUrl(warpcastUrl: string): Promise<{
       throw new Error("Cast not found");
     }
 
+    // Check if this is a quote cast (has parent_cast)
+    // For quote casts, images are typically in the parent cast, not the quote itself
+    const targetCast = cast.parent_cast || cast;
+    
     // Extract image URLs from embeds
     const images: string[] = [];
-    if (cast.embeds && Array.isArray(cast.embeds)) {
-      for (const embed of cast.embeds) {
+    
+    // First, try to get images from the parent cast (if it's a quote cast)
+    if (cast.parent_cast && cast.parent_cast.embeds && Array.isArray(cast.parent_cast.embeds)) {
+      for (const embed of cast.parent_cast.embeds) {
         // Check for direct image URLs
         if (embed.url && typeof embed.url === "string") {
           const url = embed.url.toLowerCase();
@@ -230,16 +236,50 @@ export async function fetchCastByUrl(warpcastUrl: string): Promise<{
         }
       }
     }
+    
+    // Also check the quote cast itself for images (in case it has its own images)
+    if (cast.embeds && Array.isArray(cast.embeds)) {
+      for (const embed of cast.embeds) {
+        // Check for direct image URLs
+        if (embed.url && typeof embed.url === "string") {
+          const url = embed.url.toLowerCase();
+          if (url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".webp")) {
+            // Avoid duplicates
+            if (!images.includes(embed.url)) {
+              images.push(embed.url);
+            }
+          }
+        }
+        // Check for metadata with image
+        if (embed.metadata?.image?.url && !images.includes(embed.metadata.image.url)) {
+          images.push(embed.metadata.image.url);
+        }
+      }
+    }
+    
+    // For quote casts, combine text from both the quote and parent
+    let combinedText = cast.text || "";
+    if (cast.parent_cast && cast.parent_cast.text) {
+      // If the quote cast has its own text, combine them
+      if (combinedText && cast.parent_cast.text) {
+        combinedText = `${combinedText}\n\nQuoted: ${cast.parent_cast.text}`;
+      } else {
+        combinedText = cast.parent_cast.text;
+      }
+    }
 
+    // For quote casts, use the parent cast's author info if available, otherwise use the quote cast's author
+    const authorCast = cast.parent_cast || cast;
+    
     return {
       hash: cast.hash,
-      text: cast.text || "",
+      text: combinedText,
       images,
       author: {
-        fid: cast.author.fid,
-        username: cast.author.username || "",
-        displayName: cast.author.display_name || cast.author.username || "Unknown",
-        pfpUrl: cast.author.pfp_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${cast.author.fid}`,
+        fid: authorCast.author.fid,
+        username: authorCast.author.username || "",
+        displayName: authorCast.author.display_name || authorCast.author.username || "Unknown",
+        pfpUrl: authorCast.author.pfp_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${authorCast.author.fid}`,
       },
     };
   } catch (error) {
