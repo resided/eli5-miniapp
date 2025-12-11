@@ -251,7 +251,15 @@ export function ResultScreen({
           </div>
 
           <p className="text-xs text-neutral-400 text-center pt-4">
-            A masterpiece in miniapp engineering by @ireside.eth
+            A masterpiece in miniapp engineering by{" "}
+            <a
+              href="https://farcaster.xyz/ireside.eth"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-neutral-600 hover:text-neutral-900 underline"
+            >
+              @ireside.eth
+            </a>
           </p>
         </div>
       </main>
