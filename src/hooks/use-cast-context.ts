@@ -44,10 +44,13 @@ export function useCastContext(): CastContextResult {
                 }
               }
               // Check if embed is an object with url property
-              if (typeof embed === "object" && embed !== null && "url" in embed && typeof embed.url === "string") {
-                const url = embed.url.toLowerCase();
-                if (url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".webp")) {
-                  images.push(embed.url);
+              if (typeof embed === "object" && embed !== null && "url" in embed) {
+                const embedObj = embed as { url?: string };
+                if (typeof embedObj.url === "string") {
+                  const url = embedObj.url.toLowerCase();
+                  if (url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".webp")) {
+                    images.push(embedObj.url);
+                  }
                 }
               }
             }
