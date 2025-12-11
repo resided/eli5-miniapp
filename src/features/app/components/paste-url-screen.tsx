@@ -76,7 +76,7 @@ export function PasteUrlScreen({
             </div>
             <h3 className="text-2xl font-semibold text-neutral-900 tracking-tight">ELI5</h3>
             <p className="text-sm text-neutral-500 mt-2">
-              Explain Like I&apos;m 5
+              Simplify complex casts into plain language
             </p>
           </div>
 
