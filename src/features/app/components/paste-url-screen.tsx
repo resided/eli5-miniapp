@@ -38,8 +38,12 @@ export function PasteUrlScreen({
 
         <div className="relative z-10 flex-1 flex flex-col">
           <div className="text-center pt-8 pb-8">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-neutral-900 flex items-center justify-center shadow-xl mb-6">
-              <span className="text-white font-bold text-xl">E5</span>
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-white flex items-center justify-center shadow-xl mb-6 p-2">
+              <img
+                src="/logo.png"
+                alt="ELI5"
+                className="w-full h-full object-contain"
+              />
             </div>
             <h3 className="text-2xl font-semibold text-neutral-900 tracking-tight">ELI5</h3>
             <p className="text-sm text-neutral-500 mt-2">

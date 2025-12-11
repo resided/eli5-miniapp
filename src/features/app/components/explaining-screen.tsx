@@ -21,8 +21,12 @@ function SpinningLoader() {
       <div
         className="absolute inset-0 w-20 h-20 rounded-full border-4 border-transparent border-t-neutral-900 border-r-neutral-600 animate-spin"
       />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xl font-bold text-neutral-900">E5</span>
+      <div className="absolute inset-0 flex items-center justify-center p-2">
+        <img
+          src="/logo.png"
+          alt="ELI5"
+          className="w-12 h-12 object-contain"
+        />
       </div>
     </div>
   );

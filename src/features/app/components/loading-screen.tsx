@@ -36,10 +36,12 @@ export function LoadingScreen() {
         <GradientOrb className="w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 
         <div className="relative z-10 flex flex-col items-center gap-8">
-          <div className="w-20 h-20 rounded-2xl bg-neutral-900 flex items-center justify-center shadow-2xl">
-            <span className="text-white font-bold text-2xl tracking-tight">
-              E5
-            </span>
+          <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shadow-2xl p-3">
+            <img
+              src="/logo.png"
+              alt="ELI5"
+              className="w-full h-full object-contain"
+            />
           </div>
 
           <div className="text-center space-y-4">

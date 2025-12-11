@@ -152,8 +152,12 @@ export function ResultScreen({
 
             <div className="relative bg-white rounded-2xl border border-neutral-200 shadow-lg p-6">
               <div className="flex items-center gap-3 mb-4 pb-4 border-b border-neutral-100">
-                <div className="w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">E5</span>
+                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1.5">
+                  <img
+                    src="/logo.png"
+                    alt="ELI5"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-neutral-900">Simple Explanation</p>
