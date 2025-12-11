@@ -52,13 +52,13 @@ export function PasteUrlScreen({
               <div className="text-center space-y-1">
                 <p className="font-medium text-neutral-900">Paste a cast URL</p>
                 <p className="text-xs text-neutral-500">
-                  Or use the share menu on any cast
+                  Or use the share tab
                 </p>
               </div>
 
               <input
                 type="text"
-                placeholder="Paste warpcast or farcaster.xyz URL"
+                placeholder="Paste cast URL"
                 value={castUrl}
                 onChange={(e) => onCastUrlChange(e.target.value)}
                 onKeyDown={(e) => {
