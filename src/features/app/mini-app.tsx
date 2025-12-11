@@ -49,29 +49,31 @@ export function MiniApp() {
     if (isFromShareTab && sharedCast) {
       console.log("Processing shared cast:", sharedCast);
       // Cast came from share tab
-      // If no images were extracted from SDK, try fetching via Neynar API to get images
-      if (!sharedCast.images || sharedCast.images.length === 0) {
-        // Try to fetch the full cast data including images
-        const castUrl = `https://warpcast.com/${sharedCast.author.username || sharedCast.author.fid}/${sharedCast.hash}`;
-        console.log("Fetching full cast from URL:", castUrl);
-        fetchCastByUrl(castUrl)
-          .then((fullCast) => {
-            console.log("Fetched full cast:", fullCast);
-            setCast(fullCast);
-            generateExplanation(fullCast.text, language, fullCast.images);
-          })
-          .catch((err) => {
-            // If fetch fails, use what we have from SDK
-            console.error("Failed to fetch full cast:", err);
-            setCast(sharedCast);
-            generateExplanation(sharedCast.text, language, sharedCast.images);
+      // Always try to fetch via Neynar API to get complete cast data including properly formatted images
+      const castUrl = `https://warpcast.com/${sharedCast.author.username || sharedCast.author.fid}/${sharedCast.hash}`;
+      console.log("Fetching full cast from URL:", castUrl);
+      
+      fetchCastByUrl(castUrl)
+        .then((fullCast) => {
+          console.log("Fetched full cast:", fullCast);
+          console.log("Fetched cast images:", fullCast.images);
+          setCast(fullCast);
+          generateExplanation(fullCast.text, language, fullCast.images);
+        })
+        .catch((err) => {
+          // If fetch fails, use what we have from SDK but filter out invalid image URLs
+          console.error("Failed to fetch full cast:", err);
+          const validImages = sharedCast.images?.filter(img => {
+            try {
+              const url = new URL(img);
+              return url.protocol === 'http:' || url.protocol === 'https:';
+            } catch {
+              return false;
+            }
           });
-      } else {
-        // Images found in SDK context, use them directly
-        console.log("Using cast from SDK context with images");
-        setCast(sharedCast);
-        generateExplanation(sharedCast.text, language, sharedCast.images);
-      }
+          setCast({ ...sharedCast, images: validImages && validImages.length > 0 ? validImages : undefined });
+          generateExplanation(sharedCast.text, language, validImages && validImages.length > 0 ? validImages : undefined);
+        });
     } else {
       // No shared cast - show URL input screen
       console.log("No shared cast detected, showing URL input screen");

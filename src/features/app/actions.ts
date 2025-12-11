@@ -59,12 +59,41 @@ export async function generateELI5Explanation(
       });
     }
 
-    // Add images
+    // Add images (validate URLs first)
     if (hasImages) {
+      const validImages: string[] = [];
       for (const imageUrl of images) {
+        // Validate URL format
+        try {
+          const url = new URL(imageUrl);
+          // Only allow http/https URLs
+          if (url.protocol === 'http:' || url.protocol === 'https:') {
+            validImages.push(imageUrl);
+          } else {
+            console.warn(`Invalid image URL protocol: ${imageUrl}`);
+          }
+        } catch (e) {
+          console.warn(`Invalid image URL format: ${imageUrl}`, e);
+          // Skip invalid URLs
+        }
+      }
+      
+      // Only add valid images
+      for (const imageUrl of validImages) {
         userContent.push({
           type: "image_url",
           image_url: { url: imageUrl },
+        });
+      }
+      
+      // If no valid images, treat as text-only
+      if (validImages.length === 0 && hasText) {
+        console.warn("No valid images found, processing as text-only");
+        // Rebuild content without images
+        userContent.length = 0;
+        userContent.push({
+          type: "text",
+          text: `Explain this post in simple terms:\n\n"${castText}"`,
         });
       }
     }

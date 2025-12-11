@@ -62,12 +62,23 @@ export function ExplainingScreen({ cast }: ExplainingScreenProps) {
           {cast.images && cast.images.length > 0 && (
             <div className="grid grid-cols-2 gap-2 mt-3">
               {cast.images.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`Cast image ${idx + 1}`}
-                  className="rounded-lg object-cover w-full"
-                />
+                <div key={idx} className="relative w-full aspect-square bg-neutral-100 rounded-lg overflow-hidden">
+                  <img
+                    src={img}
+                    alt={`Cast image ${idx + 1}`}
+                    className="rounded-lg object-cover w-full h-full"
+                    onError={(e) => {
+                      // Hide broken images
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                    onLoad={(e) => {
+                      // Ensure image is visible when loaded
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'block';
+                    }}
+                  />
+                </div>
               ))}
             </div>
           )}
