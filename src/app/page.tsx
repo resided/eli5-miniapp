@@ -28,9 +28,11 @@ export default function Home() {
           // Get context - it's a Promise
           const context = await sdk.context;
           
-          if (context?.cast?.hash) {
+          // Check if opened from cast share
+          if (context?.location?.type === 'cast_share' && context.location.cast) {
+            const cast = context.location.cast;
             // If opened from cast share, fetch the cast
-            const castUrl = `https://warpcast.com/${context.cast.author.username}/${context.cast.hash}`;
+            const castUrl = `https://warpcast.com/${cast.author.username || cast.author.fid}/${cast.hash}`;
             await handleFetchCast(castUrl);
           } else {
             setAppState("no-cast");
