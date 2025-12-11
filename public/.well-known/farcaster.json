@@ -1,0 +1,21 @@
+{
+  "accountAssociation": {
+    "header": "YOUR_HEADER_HERE",
+    "payload": "YOUR_PAYLOAD_HERE", 
+    "signature": "YOUR_SIGNATURE_HERE"
+  },
+  "frame": {
+    "version": "1",
+    "name": "ELI5",
+    "iconUrl": "https://YOUR_DOMAIN/app-logo.png",
+    "homeUrl": "https://YOUR_DOMAIN",
+    "splashImageUrl": "https://YOUR_DOMAIN/app-splash.png",
+    "splashBackgroundColor": "#ffffff",
+    "triggers": [
+      {
+        "type": "cast_share"
+      }
+    ]
+  }
+}
+
