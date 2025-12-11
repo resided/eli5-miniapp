@@ -213,6 +213,16 @@ export async function fetchCastByUrl(warpcastUrl: string): Promise<{
       throw new Error("Cast not found");
     }
 
+    // Debug logging for quote casts
+    console.log("Cast type:", cast.parent_cast ? "quote cast" : "regular cast");
+    if (cast.parent_cast) {
+      console.log("Parent cast found:", {
+        hash: cast.parent_cast.hash,
+        text: cast.parent_cast.text?.substring(0, 50),
+        embeds: cast.parent_cast.embeds?.length || 0,
+      });
+    }
+
     // Check if this is a quote cast (has parent_cast)
     // For quote casts, images are typically in the parent cast, not the quote itself
     const targetCast = cast.parent_cast || cast;

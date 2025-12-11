@@ -36,6 +36,10 @@ export function useCastContext(): CastContextResult {
         if (context?.location?.type === "cast_share") {
           // App was opened from share tab with a cast
           const miniAppCast = context.location.cast;
+          
+          // Check if this is a quote cast (has parent cast info in context)
+          console.log("MiniAppCast structure:", JSON.stringify(miniAppCast, null, 2));
+          console.log("Has parent cast:", !!(miniAppCast as any).parent_cast);
 
           // Extract image URLs from embeds
           // Note: MiniAppCast.embeds is string[] (array of URL strings)
