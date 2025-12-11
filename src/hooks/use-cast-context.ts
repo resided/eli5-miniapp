@@ -32,10 +32,32 @@ export function useCastContext(): CastContextResult {
           // App was opened from share tab with a cast
           const miniAppCast = context.location.cast;
 
+          // Extract image URLs from embeds
+          const images: string[] = [];
+          if (miniAppCast.embeds && Array.isArray(miniAppCast.embeds)) {
+            for (const embed of miniAppCast.embeds) {
+              // Check if embed is a string URL (image URL)
+              if (typeof embed === "string") {
+                const url = embed.toLowerCase();
+                if (url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".webp")) {
+                  images.push(embed);
+                }
+              }
+              // Check if embed is an object with url property
+              if (typeof embed === "object" && embed !== null && "url" in embed && typeof embed.url === "string") {
+                const url = embed.url.toLowerCase();
+                if (url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".webp")) {
+                  images.push(embed.url);
+                }
+              }
+            }
+          }
+
           // Transform MiniAppCast to our Cast type
           const cast: Cast = {
             hash: miniAppCast.hash,
             text: miniAppCast.text,
+            images: images.length > 0 ? images : undefined,
             author: {
               fid: miniAppCast.author.fid,
               username: miniAppCast.author.username || "",
