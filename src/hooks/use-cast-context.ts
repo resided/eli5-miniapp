@@ -33,27 +33,38 @@ export function useCastContext(): CastContextResult {
           const miniAppCast = context.location.cast;
 
           // Extract image URLs from embeds
+          // Note: MiniAppCast.embeds is string[] (array of URL strings)
           const images: string[] = [];
           if (miniAppCast.embeds && Array.isArray(miniAppCast.embeds)) {
             for (const embed of miniAppCast.embeds) {
-              // Check if embed is a string URL (image URL)
               if (typeof embed === "string") {
                 const url = embed.toLowerCase();
-                if (url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".webp")) {
+                // Check for image file extensions
+                const hasImageExtension = url.includes(".png") || 
+                  url.includes(".jpg") || 
+                  url.includes(".jpeg") || 
+                  url.includes(".gif") || 
+                  url.includes(".webp");
+                
+                // Also check for common image hosting patterns (even without extensions)
+                const isImageHost = url.includes("imgur.com") ||
+                  url.includes("i.imgur.com") ||
+                  url.includes("cdn.discordapp.com/attachments") ||
+                  url.includes("media.tenor.com") ||
+                  url.includes("giphy.com") ||
+                  url.includes("media.giphy.com");
+                
+                if (hasImageExtension || isImageHost) {
                   images.push(embed);
                 }
               }
-              // Check if embed is an object with url property
-              if (typeof embed === "object" && embed !== null && "url" in embed) {
-                const embedObj = embed as { url?: string };
-                if (typeof embedObj.url === "string") {
-                  const url = embedObj.url.toLowerCase();
-                  if (url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".webp")) {
-                    images.push(embedObj.url);
-                  }
-                }
-              }
             }
+          }
+          
+          // Debug logging (remove in production if needed)
+          if (miniAppCast.embeds && miniAppCast.embeds.length > 0) {
+            console.log("Cast embeds found:", miniAppCast.embeds);
+            console.log("Extracted images:", images);
           }
 
           // Transform MiniAppCast to our Cast type
