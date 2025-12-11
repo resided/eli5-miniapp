@@ -155,6 +155,11 @@ export async function fetchCastByUrl(warpcastUrl: string): Promise<{
       normalizedUrl = normalizedUrl.replace("farcaster.xyz", "warpcast.com");
     }
 
+    // Ensure URL has proper format (add https:// if missing)
+    if (!normalizedUrl.startsWith("http://") && !normalizedUrl.startsWith("https://")) {
+      normalizedUrl = "https://" + normalizedUrl;
+    }
+
     // Use Neynar API to fetch the cast by URL
     const response = await fetch(
       `https://api.neynar.com/v2/farcaster/cast?type=url&identifier=${encodeURIComponent(normalizedUrl)}`,
