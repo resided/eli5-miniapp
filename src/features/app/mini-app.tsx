@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import sdk from "@farcaster/miniapp-sdk";
 import type { AppState, Cast } from "@/features/app/types";
 import { useCastContext } from "@/hooks/use-cast-context";
 import { generateELI5Explanation, fetchCastByUrl } from "@/features/app/actions";
@@ -20,6 +21,21 @@ export function MiniApp() {
 
   // Get cast context from Farcaster SDK (share tab)
   const { cast: sharedCast, isLoading: contextLoading, isFromShareTab } = useCastContext();
+
+  // Call ready() to hide splash screen once app is loaded
+  useEffect(() => {
+    async function initializeSDK() {
+      try {
+        const isInMiniApp = await sdk.isInMiniApp();
+        if (isInMiniApp) {
+          await sdk.actions.ready();
+        }
+      } catch (error) {
+        console.error("Failed to initialize SDK:", error);
+      }
+    }
+    initializeSDK();
+  }, []);
 
   // Handle cast context detection
   useEffect(() => {
