@@ -3,9 +3,15 @@
 import OpenAI from "openai";
 import { SUPPORTED_LANGUAGES, type LanguageCode } from "@/features/app/constants";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI client only if API key exists
+const getOpenAIClient = () => {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OpenAI API key not configured");
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+};
 
 /**
  * Generate an ELI5 (Explain Like I'm 5) explanation for a cast
@@ -16,9 +22,7 @@ export async function generateELI5Explanation(
   language: LanguageCode = "en",
   images?: string[]
 ): Promise<string> {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OpenAI API key not configured");
-  }
+  const openai = getOpenAIClient();
 
   const languageName = SUPPORTED_LANGUAGES[language];
   const languageInstruction = language === "en"
@@ -102,6 +106,16 @@ Rules:
     return explanation.trim();
   } catch (error) {
     console.error("Error generating explanation:", error);
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (error.message.includes("API key")) {
+        throw new Error("OpenAI API key is missing or invalid. Please check your environment variables.");
+      }
+      if (error.message.includes("rate limit")) {
+        throw new Error("Rate limit exceeded. Please try again in a moment.");
+      }
+      throw new Error(`Failed to generate explanation: ${error.message}`);
+    }
     throw new Error("Failed to generate explanation. Please try again.");
   }
 }
@@ -197,7 +211,17 @@ export async function fetchCastByUrl(warpcastUrl: string): Promise<{
   } catch (error) {
     console.error("Error fetching cast:", error);
     if (error instanceof Error) {
-      throw error;
+      // Don't expose internal error details, but provide helpful messages
+      if (error.message.includes("API key")) {
+        throw new Error("Neynar API key is missing or invalid. Please check your environment variables.");
+      }
+      if (error.message.includes("Cast not found")) {
+        throw error; // This is already user-friendly
+      }
+      if (error.message.includes("valid Warpcast")) {
+        throw error; // This is already user-friendly
+      }
+      throw new Error("Failed to fetch cast. Please check the URL and try again.");
     }
     throw new Error("Failed to fetch cast. Please try again.");
   }
