@@ -32,7 +32,7 @@ export function PasteUrlScreen({
   onLanguageChange,
 }: PasteUrlScreenProps) {
   return (
-    <div className="h-dvh flex flex-col overflow-hidden bg-neutral-50">
+    <div className="h-dvh flex flex-col overflow-hidden bg-white">
       <div className="flex-1 flex flex-col p-6 relative overflow-hidden">
         <GradientOrb className="w-80 h-80 -top-20 -right-20" />
 

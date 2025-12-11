@@ -38,7 +38,7 @@ interface ExplainingScreenProps {
 
 export function ExplainingScreen({ cast }: ExplainingScreenProps) {
   return (
-    <div className="h-dvh flex flex-col overflow-hidden bg-neutral-50">
+    <div className="h-dvh flex flex-col overflow-hidden bg-white">
       <div className="flex-1 flex flex-col p-5 gap-5 relative overflow-hidden">
         <GradientOrb className="w-48 h-48 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 

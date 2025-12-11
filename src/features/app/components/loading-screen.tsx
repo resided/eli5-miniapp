@@ -31,7 +31,7 @@ function GradientOrb({ className = "" }: { className?: string }) {
 
 export function LoadingScreen() {
   return (
-    <div className="h-dvh flex flex-col overflow-hidden bg-neutral-50">
+    <div className="h-dvh flex flex-col overflow-hidden bg-white">
       <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden">
         <GradientOrb className="w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 

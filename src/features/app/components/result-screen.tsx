@@ -75,7 +75,7 @@ export function ResultScreen({
   };
 
   return (
-    <div className="h-dvh flex flex-col overflow-hidden bg-neutral-50">
+    <div className="h-dvh flex flex-col overflow-hidden bg-white">
       <main className="flex-1 overflow-y-auto p-5">
         <div className="space-y-5 pb-4">
           <div className="text-center pt-3 space-y-1">
