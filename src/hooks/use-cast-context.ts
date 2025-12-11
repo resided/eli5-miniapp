@@ -34,11 +34,13 @@ export function useCastContext(): CastContextResult {
 
           // Extract image URLs from embeds
           // Note: MiniAppCast.embeds is string[] (array of URL strings)
+          // In the context of cast shares, embeds are typically images
           const images: string[] = [];
           if (miniAppCast.embeds && Array.isArray(miniAppCast.embeds)) {
             for (const embed of miniAppCast.embeds) {
-              if (typeof embed === "string") {
-                const url = embed.toLowerCase();
+              if (typeof embed === "string" && embed.trim().length > 0) {
+                const url = embed.toLowerCase().trim();
+                
                 // Check for image file extensions
                 const hasImageExtension = url.includes(".png") || 
                   url.includes(".jpg") || 
@@ -46,26 +48,30 @@ export function useCastContext(): CastContextResult {
                   url.includes(".gif") || 
                   url.includes(".webp");
                 
-                // Also check for common image hosting patterns (even without extensions)
+                // Check for common image hosting patterns
                 const isImageHost = url.includes("imgur.com") ||
                   url.includes("i.imgur.com") ||
-                  url.includes("cdn.discordapp.com/attachments") ||
+                  url.includes("cdn.discordapp.com") ||
                   url.includes("media.tenor.com") ||
                   url.includes("giphy.com") ||
-                  url.includes("media.giphy.com");
+                  url.includes("media.giphy.com") ||
+                  url.includes("warpcast.com/~/image") ||
+                  url.includes("imagedelivery.net") ||
+                  url.includes("cloudinary.com");
                 
-                if (hasImageExtension || isImageHost) {
-                  images.push(embed);
+                // If it's a valid URL and looks like an image, include it
+                // Be permissive - in cast shares, embeds are usually images
+                if (hasImageExtension || isImageHost || url.startsWith("http")) {
+                  images.push(embed.trim());
                 }
               }
             }
           }
           
-          // Debug logging (remove in production if needed)
-          if (miniAppCast.embeds && miniAppCast.embeds.length > 0) {
-            console.log("Cast embeds found:", miniAppCast.embeds);
-            console.log("Extracted images:", images);
-          }
+          // Debug logging to help diagnose issues
+          console.log("Cast context - text:", miniAppCast.text);
+          console.log("Cast context - embeds:", miniAppCast.embeds);
+          console.log("Extracted images:", images);
 
           // Transform MiniAppCast to our Cast type
           const cast: Cast = {
