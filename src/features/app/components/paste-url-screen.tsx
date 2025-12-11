@@ -181,19 +181,20 @@ export function PasteUrlScreen({
 
             <div className="p-4 rounded-2xl bg-neutral-100 border border-neutral-200">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white border border-neutral-200 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-5 h-5 text-neutral-600"
-                    fill="none"
+                    className="w-5 h-5 text-neutral-300"
                     viewBox="0 0 24 24"
+                    fill="none"
                     stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                    />
+                    {/* Square with rounded corners */}
+                    <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+                    {/* Upward arrow from bottom center */}
+                    <path d="M12 16V8M8 12l4-4 4 4" />
                   </svg>
                 </div>
                 <div>
